@@ -7,85 +7,80 @@
 <meta name="description" content="写下代祷的事，安静等候片刻，生成一篇祷告词，并带领你一起祷告。内容只保存在你的浏览器，不会上传。">
 <style>
   :root{
-    --teal:#16323C; --wine:#7A1E2E; --gold:#C9A227;
-    --ink:#22323a; --muted:#6b7a80; --line:#e7e2d5; --bg:#faf8f2; --card:#ffffff;
+    --ink:#1c1c1c; --muted:#9a9a9a; --faint:#c9c9c9;
+    --line:#e8e8e8; --bg:#ffffff; --accent:#16323C;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   body{margin:0; background:var(--bg); color:var(--ink);
     font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
-    font-size:17px; line-height:1.75;}
-  .wrap{max-width:640px; margin:0 auto; padding:0 18px 48px;}
-  header{text-align:center; padding:34px 0 8px;}
-  header .mark{width:54px; height:54px; margin:0 auto 12px; border-radius:50%;
-    background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center;
-    font-size:26px; line-height:1;}
-  h1{margin:0; font-size:28px; color:var(--teal); letter-spacing:2px;}
-  header p{margin:6px 0 0; color:var(--muted); font-size:15px;}
-  .gold-rule{width:64px; height:3px; background:var(--gold); margin:18px auto 0; border-radius:2px;}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:16px;
-    padding:22px 20px; margin-top:18px; box-shadow:0 2px 10px rgba(22,50,60,.06);}
-  h2{margin:0 0 4px; font-size:19px; color:var(--teal);}
-  .hint{color:var(--muted); font-size:14px; margin:0 0 14px;}
-  .privacy{font-size:13px; color:var(--muted); margin:14px 0 0; text-align:center;}
-  .privacy b{color:var(--teal); font-weight:600;}
-  label{display:block; font-weight:600; color:var(--teal); margin:16px 0 8px; font-size:16px;}
+    font-size:18px; line-height:2; font-weight:300;}
+  .wrap{max-width:600px; margin:0 auto; padding:0 28px 80px;}
+  header{text-align:center; padding:72px 0 56px;}
+  header .mark{font-size:30px; color:var(--accent); line-height:1; margin-bottom:22px; font-weight:300;}
+  h1{margin:0; font-size:32px; font-weight:300; color:var(--ink); letter-spacing:10px; text-indent:10px;}
+  header p{margin:18px 0 0; color:var(--muted); font-size:16px; letter-spacing:1px;}
+  section{padding:48px 0; border-top:1px solid var(--line);}
+  section:first-of-type{border-top:none;}
+  h2{margin:0 0 8px; font-size:22px; font-weight:400; color:var(--ink); letter-spacing:3px;}
+  .hint{color:var(--muted); font-size:15px; margin:0 0 28px; letter-spacing:1px;}
+  .privacy{font-size:14px; color:var(--muted); margin:28px 0 0; text-align:center; letter-spacing:1px;}
+  label{display:block; font-weight:400; color:var(--ink); margin:36px 0 12px; font-size:16px; letter-spacing:2px;}
   label:first-child{margin-top:0;}
-  .chips{display:flex; flex-wrap:wrap; gap:8px;}
-  .chip{border:1.5px solid var(--line); background:#fff; color:var(--ink);
-    border-radius:999px; padding:8px 16px; font-size:16px; cursor:pointer; font-family:inherit;}
-  .chip[aria-pressed="true"]{background:var(--teal); border-color:var(--teal); color:#fff;}
-  textarea{width:100%; min-height:150px; resize:vertical; border:1.5px solid var(--line);
-    border-radius:12px; padding:14px; font-size:17px; line-height:1.8; font-family:inherit;
-    color:var(--ink); background:#fffdf7;}
-  textarea:focus, input:focus{outline:2px solid var(--gold); border-color:var(--gold);}
-  input[type="text"]{width:100%; border:1.5px solid var(--line); border-radius:12px;
-    padding:12px 14px; font-size:17px; font-family:inherit; color:var(--ink);}
-  .btn{display:block; width:100%; border:none; border-radius:12px; padding:15px;
-    font-size:18px; font-weight:700; cursor:pointer; font-family:inherit; letter-spacing:1px;}
-  .btn-primary{background:var(--teal); color:#fff; margin-top:22px;}
-  .btn-primary:disabled{background:#9aa8ac; cursor:not-allowed;}
-  .btn-wine{background:var(--wine); color:#fff; margin-top:12px;}
-  .btn-gold{background:var(--gold); color:#2b2403; margin-top:12px;}
-  .btn-ghost{background:#fff; color:var(--teal); border:1.5px solid var(--teal); margin-top:12px;}
-  .btn-row{display:flex; gap:10px; margin-top:12px;}
-  .btn-row .btn{margin-top:0; flex:1; font-size:16px; padding:13px 6px;}
+  label span{color:var(--muted);}
+  .chips{display:flex; flex-wrap:wrap; gap:12px;}
+  .chip{border:1px solid var(--line); background:#fff; color:var(--ink);
+    border-radius:999px; padding:10px 22px; font-size:16px; cursor:pointer; font-family:inherit; font-weight:300; letter-spacing:2px;}
+  .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#fff;}
+  textarea{width:100%; min-height:160px; resize:vertical; border:none; border-bottom:1px solid var(--line);
+    padding:8px 2px; font-size:18px; line-height:2; font-family:inherit; font-weight:300;
+    color:var(--ink); background:transparent;}
+  textarea:focus, input:focus{outline:none; border-bottom-color:var(--accent);}
+  input[type="text"]{width:100%; border:none; border-bottom:1px solid var(--line);
+    padding:8px 2px; font-size:18px; font-family:inherit; font-weight:300; color:var(--ink); background:transparent;}
+  .btn{display:block; width:100%; border:none; border-radius:2px; padding:18px;
+    font-size:18px; font-weight:400; cursor:pointer; font-family:inherit; letter-spacing:4px; text-indent:4px;}
+  .btn-primary{background:var(--ink); color:#fff; margin-top:44px;}
+  .btn-primary:disabled{background:#c9c9c9; cursor:not-allowed;}
+  .btn-wine{background:var(--accent); color:#fff; margin-top:16px;}
+  .btn-gold{background:transparent; color:var(--ink); border:1px solid var(--ink); margin-top:12px;}
+  .btn-ghost{background:transparent; color:var(--ink); border:1px solid var(--line); margin-top:12px;}
+  .btn-row{display:flex; gap:12px; margin-top:12px;}
+  .btn-row .btn{margin-top:0; flex:1; font-size:16px; padding:15px 6px; letter-spacing:2px; text-indent:2px;}
   .hidden{display:none !important;}
   /* 等候 */
-  .wait{text-align:center; padding:26px 10px 10px;}
-  .count{font-size:64px; font-weight:700; color:var(--teal); line-height:1.1; font-variant-numeric:tabular-nums;}
-  .count-label{color:var(--muted); font-size:15px; margin-top:2px;}
-  .bar{height:6px; background:#eee8d6; border-radius:3px; margin:20px 0 6px; overflow:hidden;}
-  .bar i{display:block; height:100%; background:var(--gold); width:100%; transition:width 1s linear;}
-  .wait-verse{margin:22px 0 6px; font-size:18px; color:var(--wine); line-height:1.9;}
-  .wait-ref{color:var(--muted); font-size:14px;}
-  .skip{display:inline-block; margin-top:20px; color:var(--teal); font-size:15px;
-    text-decoration:underline; text-underline-offset:4px; cursor:pointer; background:none; border:none; font-family:inherit;}
+  .wait{text-align:center; padding:32px 0 8px;}
+  .count{font-size:96px; font-weight:200; color:var(--ink); line-height:1.1; font-variant-numeric:tabular-nums; letter-spacing:4px;}
+  .count-label{color:var(--muted); font-size:16px; margin-top:12px; letter-spacing:4px;}
+  .bar{height:2px; background:var(--line); border-radius:1px; margin:40px 0 8px; overflow:hidden;}
+  .bar i{display:block; height:100%; background:var(--accent); width:100%; transition:width 1s linear;}
+  .wait-verse{margin:40px 0 8px; font-size:20px; color:var(--accent); line-height:2; font-weight:300;}
+  .wait-ref{color:var(--muted); font-size:14px; letter-spacing:2px;}
+  .skip{display:inline-block; margin-top:36px; color:var(--muted); font-size:15px;
+    text-decoration:underline; text-underline-offset:6px; cursor:pointer; background:none; border:none; font-family:inherit; letter-spacing:2px;}
   /* 祷告词 */
-  .prayer{font-size:19px; line-height:2.05; color:#2a363d;}
-  .prayer p{margin:0 0 14px;}
-  .prayer .psent{border-radius:8px; padding:2px 6px; margin-left:-6px; margin-right:-6px; transition:background .3s;}
-  .prayer .psent.speaking{background:#fdf3cd; box-shadow:0 0 0 1.5px var(--gold);}
-  .prayer blockquote{margin:18px 0; padding:14px 16px; border-left:4px solid var(--gold);
-    background:#fffaf0; color:var(--wine); font-size:18px; line-height:1.9; border-radius:0 10px 10px 0;}
-  .prayer blockquote .ref{display:block; margin-top:6px; font-size:14px; color:var(--muted);}
-  .prayer .user-words{background:#f4f7f7; border:1px dashed #b9c6c9; border-radius:12px; padding:14px 16px;}
-  .prayer .amen{color:var(--wine); font-weight:700;}
-  .speak-status{text-align:center; color:var(--muted); font-size:14px; min-height:22px; margin-top:10px;}
-  .speed{display:flex; justify-content:center; gap:8px; margin-top:14px; align-items:center; font-size:15px; color:var(--muted);}
-  .speed button{border:1.5px solid var(--line); background:#fff; border-radius:999px;
-    padding:6px 14px; font-size:15px; cursor:pointer; font-family:inherit; color:var(--ink);}
-  .speed button[aria-pressed="true"]{background:var(--teal); border-color:var(--teal); color:#fff;}
+  .prayer{font-size:20px; line-height:2.2; color:var(--ink); font-weight:300;}
+  .prayer p{margin:0 0 20px;}
+  .prayer .psent{border-radius:4px; padding:2px 8px; margin-left:-8px; margin-right:-8px; transition:background .3s;}
+  .prayer .psent.speaking{background:#f6f3ec;}
+  .prayer blockquote{margin:28px 0; padding:4px 0 4px 20px; border-left:2px solid var(--accent);
+    color:var(--accent); font-size:20px; line-height:2;}
+  .prayer blockquote .ref{display:block; margin-top:8px; font-size:14px; color:var(--muted); letter-spacing:2px;}
+  .prayer .user-words{border-left:2px solid var(--line); padding-left:20px; color:#555;}
+  .prayer .amen{color:var(--accent); font-weight:400;}
+  .speak-status{text-align:center; color:var(--muted); font-size:14px; min-height:24px; margin-top:16px; letter-spacing:2px;}
+  .speed{display:flex; justify-content:center; gap:10px; margin-top:24px; align-items:center; font-size:15px; color:var(--muted); letter-spacing:2px;}
+  .speed button{border:1px solid var(--line); background:#fff; border-radius:999px;
+    padding:8px 20px; font-size:15px; cursor:pointer; font-family:inherit; color:var(--ink); font-weight:300; letter-spacing:2px;}
+  .speed button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#fff;}
   /* 记录 */
-  .hist-item{border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-top:10px;
-    cursor:pointer; background:#fff;}
-  .hist-item .meta{font-size:13px; color:var(--muted);}
-  .hist-item .prev{font-size:16px; margin-top:2px;}
-  .hist-item .del{float:right; border:none; background:none; color:var(--wine); font-size:15px; cursor:pointer; padding:2px 6px;}
-  .hist-empty{color:var(--muted); font-size:15px; margin-top:8px;}
-  .linklike{color:var(--teal); text-decoration:underline; text-underline-offset:3px; cursor:pointer; background:none; border:none; font-size:14px; font-family:inherit; padding:0;}
-  footer{text-align:center; color:var(--muted); font-size:14px; margin-top:34px; line-height:2;}
-  footer a{color:var(--teal); text-decoration:none; font-weight:600;}
-  footer .v{font-size:13px;}
+  .hist-item{border-bottom:1px solid var(--line); padding:20px 0; cursor:pointer;}
+  .hist-item .meta{font-size:13px; color:var(--muted); letter-spacing:2px;}
+  .hist-item .prev{font-size:17px; margin-top:6px; font-weight:300;}
+  .hist-item .del{float:right; border:none; background:none; color:var(--muted); font-size:14px; cursor:pointer; padding:2px 0 2px 12px; letter-spacing:1px;}
+  .hist-empty{color:var(--muted); font-size:16px; margin-top:8px;}
+  .linklike{color:var(--muted); text-decoration:underline; text-underline-offset:4px; cursor:pointer; background:none; border:none; font-size:14px; font-family:inherit; padding:0; letter-spacing:2px;}
+  footer{text-align:center; color:var(--faint); font-size:14px; margin-top:64px; line-height:2.2; letter-spacing:2px;}
+  footer a{color:var(--muted); text-decoration:none;}
 </style>
 </head>
 <body>
@@ -94,45 +89,44 @@
     <div class="mark">✝</div>
     <h1>祷告小助手</h1>
     <p>写下心里的话，安静等候，让主带领你祷告</p>
-    <div class="gold-rule"></div>
   </header>
 
   <!-- 第一步：写下代祷的事 -->
-  <section class="card" id="step-form">
+  <section id="step-form">
     <h2>写下代祷的事</h2>
     <p class="hint">把你想说的话、需要祷告的事写下来。</p>
     <label>代祷类别</label>
     <div class="chips" id="chips" role="group" aria-label="代祷类别"></div>
     <label for="words">想说的话 / 需要祷告的事</label>
     <textarea id="words" placeholder="例如：妈妈最近身体不太好，求主保守她……&#10;例如：谢谢主，这个月工作很顺利，孩子也很听话……"></textarea>
-    <label for="name">你的名字 <span style="color:var(--muted); font-weight:400;">（可不填）</span></label>
+    <label for="name">你的名字 <span>（可不填）</span></label>
     <input type="text" id="name" placeholder="例如：小杰" maxlength="20" autocomplete="off">
     <button class="btn btn-primary" id="btn-start">开始等候，预备祷告</button>
-    <p class="privacy">🔒 <b>内容只保存在你的浏览器，不会上传</b>，也不会发给任何人。</p>
+    <p class="privacy">内容只保存在你的浏览器，不会上传，也不会发给任何人。</p>
   </section>
 
   <!-- 第二步：等候 -->
-  <section class="card hidden" id="step-wait">
+  <section class="hidden" id="step-wait">
     <div class="wait">
       <div class="count" id="count">60</div>
       <div class="count-label">安静片刻，等候主</div>
       <div class="bar"><i id="barfill"></i></div>
       <p class="wait-verse" id="wait-verse"></p>
       <p class="wait-ref" id="wait-ref"></p>
-      <button class="skip" id="btn-skip">不等了，直接生成祷告词 →</button>
+      <button class="skip" id="btn-skip">跳过等候，直接生成祷告词</button>
     </div>
   </section>
 
   <!-- 第三步：祷告词 -->
-  <section class="card hidden" id="step-prayer">
+  <section class="hidden" id="step-prayer">
     <h2>你的祷告词</h2>
     <p class="hint">慢慢读，也可以点下面，让它一句一句带领你祷告。</p>
     <div class="prayer" id="prayer"></div>
     <div class="speak-status" id="speak-status"></div>
-    <button class="btn btn-wine" id="btn-speak">🙏 带领我祷告</button>
+    <button class="btn btn-wine" id="btn-speak">带领我祷告</button>
     <div class="btn-row hidden" id="speak-controls">
-      <button class="btn btn-ghost" id="btn-pause">⏸ 暂停</button>
-      <button class="btn btn-ghost" id="btn-stop">■ 停止</button>
+      <button class="btn btn-ghost" id="btn-pause">暂停</button>
+      <button class="btn btn-ghost" id="btn-stop">停止</button>
     </div>
     <div class="speed">
       语速：
@@ -140,24 +134,24 @@
       <button id="speed-normal" aria-pressed="true">正常</button>
     </div>
     <div class="btn-row">
-      <button class="btn btn-ghost" id="btn-copy">📋 复制祷告词</button>
-      <button class="btn btn-gold" id="btn-again">✏️ 再写一个</button>
+      <button class="btn btn-ghost" id="btn-copy">复制祷告词</button>
+      <button class="btn btn-gold" id="btn-again">再写一个</button>
     </div>
   </section>
 
   <!-- 我的祷告记录 -->
-  <section class="card" id="history-card">
+  <section id="history-card">
     <h2>我的祷告记录</h2>
     <p class="hint">只保存在这台设备上，随时可以查看或删除。</p>
     <div id="history-list"></div>
-    <p style="text-align:right; margin:12px 0 0;">
+    <p style="text-align:right; margin:20px 0 0;">
       <button class="linklike" id="btn-clear-history">清空全部记录</button>
     </p>
   </section>
 
   <footer>
     愿主垂听你的祷告 · <a href="https://liubc.org">长岛联合圣经教会 liubc.org</a><br>
-    <span class="v">经文引自和合本圣经 · 祷告小助手</span>
+    <span>经文引自和合本圣经</span>
   </footer>
 </div>
 
@@ -380,7 +374,7 @@ if (typeof document !== "undefined") {
     }
     if(i >= current.parts.length){ stopSpeaking(true); return; }
     speakIdx = i; speaking = true; paused = false;
-    $("btn-pause").textContent = "⏸ 暂停";
+    $("btn-pause").textContent = "暂停";
     highlight(i);
     var u = new SpeechSynthesisUtterance(current.parts[i].speak);
     u.lang = "zh-CN";
@@ -413,12 +407,12 @@ if (typeof document !== "undefined") {
     if(paused){
       paused = false;
       window.speechSynthesis.resume();
-      $("btn-pause").textContent = "⏸ 暂停";
+      $("btn-pause").textContent = "暂停";
       $("speak-status").textContent = "继续带领祷告…";
     } else {
       paused = true;
       window.speechSynthesis.pause();
-      $("btn-pause").textContent = "▶ 继续";
+      $("btn-pause").textContent = "继续";
       $("speak-status").textContent = "已暂停，慢慢来，不着急。";
     }
   });
@@ -440,7 +434,7 @@ if (typeof document !== "undefined") {
   /* 复制 / 再写一个 */
   $("btn-copy").addEventListener("click", function(){
     if(!current) return;
-    var done = function(){ $("btn-copy").textContent = "✅ 已复制"; setTimeout(function(){ $("btn-copy").textContent = "📋 复制祷告词"; }, 2000); };
+    var done = function(){ $("btn-copy").textContent = "已复制"; setTimeout(function(){ $("btn-copy").textContent = "复制祷告词"; }, 2000); };
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(current.plain).then(done, function(){ fallbackCopy(); });
     } else { fallbackCopy(); }
