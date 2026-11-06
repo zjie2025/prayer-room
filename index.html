@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>祷告小助手</title>
+<meta name="description" content="写下代祷的事，安静等候片刻，生成一篇祷告词，并带领你一起祷告。内容只保存在你的浏览器，不会上传。">
+<style>
+  :root{
+    --teal:#16323C; --wine:#7A1E2E; --gold:#C9A227;
+    --ink:#22323a; --muted:#6b7a80; --line:#e7e2d5; --bg:#faf8f2; --card:#ffffff;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    font-size:17px; line-height:1.75;}
+  .wrap{max-width:640px; margin:0 auto; padding:0 18px 48px;}
+  header{text-align:center; padding:34px 0 8px;}
+  header .mark{width:54px; height:54px; margin:0 auto 12px; border-radius:50%;
+    background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:26px; line-height:1;}
+  h1{margin:0; font-size:28px; color:var(--teal); letter-spacing:2px;}
+  header p{margin:6px 0 0; color:var(--muted); font-size:15px;}
+  .gold-rule{width:64px; height:3px; background:var(--gold); margin:18px auto 0; border-radius:2px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:22px 20px; margin-top:18px; box-shadow:0 2px 10px rgba(22,50,60,.06);}
+  h2{margin:0 0 4px; font-size:19px; color:var(--teal);}
+  .hint{color:var(--muted); font-size:14px; margin:0 0 14px;}
+  .privacy{font-size:13px; color:var(--muted); margin:14px 0 0; text-align:center;}
+  .privacy b{color:var(--teal); font-weight:600;}
+  label{display:block; font-weight:600; color:var(--teal); margin:16px 0 8px; font-size:16px;}
+  label:first-child{margin-top:0;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{border:1.5px solid var(--line); background:#fff; color:var(--ink);
+    border-radius:999px; padding:8px 16px; font-size:16px; cursor:pointer; font-family:inherit;}
+  .chip[aria-pressed="true"]{background:var(--teal); border-color:var(--teal); color:#fff;}
+  textarea{width:100%; min-height:150px; resize:vertical; border:1.5px solid var(--line);
+    border-radius:12px; padding:14px; font-size:17px; line-height:1.8; font-family:inherit;
+    color:var(--ink); background:#fffdf7;}
+  textarea:focus, input:focus{outline:2px solid var(--gold); border-color:var(--gold);}
+  input[type="text"]{width:100%; border:1.5px solid var(--line); border-radius:12px;
+    padding:12px 14px; font-size:17px; font-family:inherit; color:var(--ink);}
+  .btn{display:block; width:100%; border:none; border-radius:12px; padding:15px;
+    font-size:18px; font-weight:700; cursor:pointer; font-family:inherit; letter-spacing:1px;}
+  .btn-primary{background:var(--teal); color:#fff; margin-top:22px;}
+  .btn-primary:disabled{background:#9aa8ac; cursor:not-allowed;}
+  .btn-wine{background:var(--wine); color:#fff; margin-top:12px;}
+  .btn-gold{background:var(--gold); color:#2b2403; margin-top:12px;}
+  .btn-ghost{background:#fff; color:var(--teal); border:1.5px solid var(--teal); margin-top:12px;}
+  .btn-row{display:flex; gap:10px; margin-top:12px;}
+  .btn-row .btn{margin-top:0; flex:1; font-size:16px; padding:13px 6px;}
+  .hidden{display:none !important;}
+  /* 等候 */
+  .wait{text-align:center; padding:26px 10px 10px;}
+  .count{font-size:64px; font-weight:700; color:var(--teal); line-height:1.1; font-variant-numeric:tabular-nums;}
+  .count-label{color:var(--muted); font-size:15px; margin-top:2px;}
+  .bar{height:6px; background:#eee8d6; border-radius:3px; margin:20px 0 6px; overflow:hidden;}
+  .bar i{display:block; height:100%; background:var(--gold); width:100%; transition:width 1s linear;}
+  .wait-verse{margin:22px 0 6px; font-size:18px; color:var(--wine); line-height:1.9;}
+  .wait-ref{color:var(--muted); font-size:14px;}
+  .skip{display:inline-block; margin-top:20px; color:var(--teal); font-size:15px;
+    text-decoration:underline; text-underline-offset:4px; cursor:pointer; background:none; border:none; font-family:inherit;}
+  /* 祷告词 */
+  .prayer{font-size:19px; line-height:2.05; color:#2a363d;}
+  .prayer p{margin:0 0 14px;}
+  .prayer .psent{border-radius:8px; padding:2px 6px; margin-left:-6px; margin-right:-6px; transition:background .3s;}
+  .prayer .psent.speaking{background:#fdf3cd; box-shadow:0 0 0 1.5px var(--gold);}
+  .prayer blockquote{margin:18px 0; padding:14px 16px; border-left:4px solid var(--gold);
+    background:#fffaf0; color:var(--wine); font-size:18px; line-height:1.9; border-radius:0 10px 10px 0;}
+  .prayer blockquote .ref{display:block; margin-top:6px; font-size:14px; color:var(--muted);}
+  .prayer .user-words{background:#f4f7f7; border:1px dashed #b9c6c9; border-radius:12px; padding:14px 16px;}
+  .prayer .amen{color:var(--wine); font-weight:700;}
+  .speak-status{text-align:center; color:var(--muted); font-size:14px; min-height:22px; margin-top:10px;}
+  .speed{display:flex; justify-content:center; gap:8px; margin-top:14px; align-items:center; font-size:15px; color:var(--muted);}
+  .speed button{border:1.5px solid var(--line); background:#fff; border-radius:999px;
+    padding:6px 14px; font-size:15px; cursor:pointer; font-family:inherit; color:var(--ink);}
+  .speed button[aria-pressed="true"]{background:var(--teal); border-color:var(--teal); color:#fff;}
+  /* 记录 */
+  .hist-item{border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-top:10px;
+    cursor:pointer; background:#fff;}
+  .hist-item .meta{font-size:13px; color:var(--muted);}
+  .hist-item .prev{font-size:16px; margin-top:2px;}
+  .hist-item .del{float:right; border:none; background:none; color:var(--wine); font-size:15px; cursor:pointer; padding:2px 6px;}
+  .hist-empty{color:var(--muted); font-size:15px; margin-top:8px;}
+  .linklike{color:var(--teal); text-decoration:underline; text-underline-offset:3px; cursor:pointer; background:none; border:none; font-size:14px; font-family:inherit; padding:0;}
+  footer{text-align:center; color:var(--muted); font-size:14px; margin-top:34px; line-height:2;}
+  footer a{color:var(--teal); text-decoration:none; font-weight:600;}
+  footer .v{font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark">✝</div>
+    <h1>祷告小助手</h1>
+    <p>写下心里的话，安静等候，让主带领你祷告</p>
+    <div class="gold-rule"></div>
+  </header>
+
+  <!-- 第一步：写下代祷的事 -->
+  <section class="card" id="step-form">
+    <h2>写下代祷的事</h2>
+    <p class="hint">把你想说的话、需要祷告的事写下来。</p>
+    <label>代祷类别</label>
+    <div class="chips" id="chips" role="group" aria-label="代祷类别"></div>
+    <label for="words">想说的话 / 需要祷告的事</label>
+    <textarea id="words" placeholder="例如：妈妈最近身体不太好，求主保守她……&#10;例如：谢谢主，这个月工作很顺利，孩子也很听话……"></textarea>
+    <label for="name">你的名字 <span style="color:var(--muted); font-weight:400;">（可不填）</span></label>
+    <input type="text" id="name" placeholder="例如：小杰" maxlength="20" autocomplete="off">
+    <button class="btn btn-primary" id="btn-start">开始等候，预备祷告</button>
+    <p class="privacy">🔒 <b>内容只保存在你的浏览器，不会上传</b>，也不会发给任何人。</p>
+  </section>
+
+  <!-- 第二步：等候 -->
+  <section class="card hidden" id="step-wait">
+    <div class="wait">
+      <div class="count" id="count">60</div>
+      <div class="count-label">安静片刻，等候主</div>
+      <div class="bar"><i id="barfill"></i></div>
+      <p class="wait-verse" id="wait-verse"></p>
+      <p class="wait-ref" id="wait-ref"></p>
+      <button class="skip" id="btn-skip">不等了，直接生成祷告词 →</button>
+    </div>
+  </section>
+
+  <!-- 第三步：祷告词 -->
+  <section class="card hidden" id="step-prayer">
+    <h2>你的祷告词</h2>
+    <p class="hint">慢慢读，也可以点下面，让它一句一句带领你祷告。</p>
+    <div class="prayer" id="prayer"></div>
+    <div class="speak-status" id="speak-status"></div>
+    <button class="btn btn-wine" id="btn-speak">🙏 带领我祷告</button>
+    <div class="btn-row hidden" id="speak-controls">
+      <button class="btn btn-ghost" id="btn-pause">⏸ 暂停</button>
+      <button class="btn btn-ghost" id="btn-stop">■ 停止</button>
+    </div>
+    <div class="speed">
+      语速：
+      <button id="speed-slow" aria-pressed="false">慢速</button>
+      <button id="speed-normal" aria-pressed="true">正常</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="btn-copy">📋 复制祷告词</button>
+      <button class="btn btn-gold" id="btn-again">✏️ 再写一个</button>
+    </div>
+  </section>
+
+  <!-- 我的祷告记录 -->
+  <section class="card" id="history-card">
+    <h2>我的祷告记录</h2>
+    <p class="hint">只保存在这台设备上，随时可以查看或删除。</p>
+    <div id="history-list"></div>
+    <p style="text-align:right; margin:12px 0 0;">
+      <button class="linklike" id="btn-clear-history">清空全部记录</button>
+    </p>
+  </section>
+
+  <footer>
+    愿主垂听你的祷告 · <a href="https://liubc.org">长岛联合圣经教会 liubc.org</a><br>
+    <span class="v">经文引自和合本圣经 · 祷告小助手</span>
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* ============ 经文库（和合本，逐字核对自 BibleGateway CUVS） ============ */
+var VERSES = {
+  "感恩": [
+    {ref:"诗篇 100:4", text:"当称谢进入他的门；当赞美进入他的院。当感谢他，称颂他的名！"},
+    {ref:"帖撒罗尼迦前书 5:18", text:"凡事谢恩；因为这是神在基督耶稣里向你们所定的旨意。"}
+  ],
+  "家人": [
+    {ref:"约书亚记 24:15", text:"至于我和我家，我们必定事奉耶和华。"},
+    {ref:"诗篇 127:3", text:"儿女是耶和华所赐的产业；所怀的胎是他所给的赏赐。"}
+  ],
+  "健康": [
+    {ref:"诗篇 103:3", text:"他赦免你的一切罪孽，医治你的一切疾病。"},
+    {ref:"雅各书 5:15", text:"出于信心的祈祷要救那病人，主必叫他起来；他若犯了罪，也必蒙赦免。"}
+  ],
+  "工作": [
+    {ref:"歌罗西书 3:23", text:"无论做甚麽，都要从心里做，像是给主做的，不是给人做的。"},
+    {ref:"箴言 16:3", text:"你所做的，要交托耶和华，你所谋的，就必成立。"}
+  ],
+  "学业": [
+    {ref:"箴言 2:6", text:"因为，耶和华赐人智慧；知识和聪明都由他口而出。"},
+    {ref:"雅各书 1:5", text:"你们中间若有缺少智慧的，应当求那厚赐与众人、也不斥责人的神，主就必赐给他。"}
+  ],
+  "教会": [
+    {ref:"马太福音 18:20", text:"因为无论在哪里，有两三个人奉我的名聚会，那里就有我在他们中间。"},
+    {ref:"以弗所书 4:3", text:"用和平彼此联络，竭力保守圣灵所赐合而为一的心。"}
+  ],
+  "其他": [
+    {ref:"腓立比书 4:6-7", text:"应当一无挂虑，只要凡事借着祷告、祈求，和感谢，将你们所要的告诉神。神所赐、出人意外的平安必在基督耶稣里保守你们的心怀意念。"},
+    {ref:"彼得前书 5:7", text:"你们要将一切的忧虑卸给神，因为他顾念你们。"}
+  ]
+};
+var CATEGORIES = ["感恩","家人","健康","工作","学业","教会","其他"];
+
+var THANKS = {
+  "感恩":"谢谢你一直以来的恩典和保守，你的供应从没有离开过我。",
+  "家人":"谢谢你把家人赐给我，谢谢你一直保守我们一家人。",
+  "健康":"谢谢你在我身体软弱的时候仍然与我同在，谢谢你赐下平安。",
+  "工作":"谢谢你赐给我工作和机会，让我能用双手养家、服事人。",
+  "学业":"谢谢你赐给我学习的机会和聪明智慧。",
+  "教会":"谢谢你把我放在教会这个家里，有弟兄姊妹一起同行。",
+  "其他":"谢谢你一直看顾我，听我的祷告。"
+};
+var PETITIONS = {
+  "感恩":["主啊，愿我一生都记得数算你的恩典。","求你让我在顺境里不忘记你，在逆境里仍然赞美你。"],
+  "家人":["求你保守我的家人出入平安，身体健壮。","求你在我们家中掌权，让我们彼此相爱、彼此饶恕。","愿我的家成为一个敬拜你的家。"],
+  "健康":["主啊，求你医治的手按在我身上，使我得着康复。","在等候的日子里，求你赐我平安和忍耐。","求你也安慰我的家人，让我们一同经历你的信实。"],
+  "工作":["求你赐我智慧和力量，忠心做好手上的每一件事。","求你为我开路，供应我一切的需要。","愿我在工作的地方成为你的见证。"],
+  "学业":["求你赐我聪明智慧和专一的心，使我学得明白、记得牢。","求你引导我前面的路，无论是考试还是申请，都按你的美意成就。"],
+  "教会":["求你保守教会合而为一，弟兄姊妹彼此相爱、互相扶持。","求你复兴你的教会，让更多人认识你、归向你。"],
+  "其他":["主啊，我把心里的忧虑都卸给你，因为你顾念我。","求你赐我出人意外的平安，保守我的心怀意念。","愿你的旨意成就在我的生命中。"]
+};
+
+/* 把一段文字切成句子（保留标点），供朗读与高亮用 */
+function splitSentences(s){
+  var out = [];
+  String(s).split(/\n+/).forEach(function(line){
+    line = line.trim();
+    if(!line) return;
+    var parts = line.split(/(?<=[。！？；])/);
+    parts.forEach(function(p){
+      p = p.trim();
+      if(p) out.push(p);
+    });
+  });
+  return out;
+}
+
+/* 生成祷告词：返回 {parts, plain}；parts 每一项 {kind:'line'|'user'|'verse', text, speak} */
+function buildPrayer(category, userText, name){
+  var v = VERSES[category] || VERSES["其他"];
+  var parts = [];
+  var opening = name ? ("亲爱的天父，我是" + name + "，我来到你的面前。")
+                     : "亲爱的天父，我来到你的面前。";
+  parts.push({kind:"line", text:opening, speak:opening});
+  var th = THANKS[category] || THANKS["其他"];
+  parts.push({kind:"line", text:th, speak:th});
+  parts.push({kind:"line", text:"主啊，我把心里的话告诉你：", speak:"主啊，我把心里的话告诉你："});
+  splitSentences(userText).forEach(function(s){
+    parts.push({kind:"user", text:s, speak:s});
+  });
+  (PETITIONS[category] || PETITIONS["其他"]).forEach(function(s){
+    parts.push({kind:"line", text:s, speak:s});
+  });
+  var verse = v[1];
+  parts.push({kind:"verse", text:verse.text, ref:verse.ref, speak:verse.text});
+  parts.push({kind:"line", text:"主啊，我把这一切都交托在你手中，求你按着你的美意成就。", speak:"主啊，我把这一切都交托在你手中，求你按着你的美意成就。"});
+  parts.push({kind:"line", text:"奉主耶稣基督的名祷告，阿们。", speak:"奉主耶稣基督的名祷告，阿们。", amen:true});
+  var plain = parts.map(function(p){
+    return p.kind === "verse" ? (p.text + "（" + p.ref + "）") : p.text;
+  }).join("\n");
+  return {parts:parts, plain:plain, verse:verse};
+}
+
+/* ============ 界面逻辑（仅在浏览器里运行） ============ */
+if (typeof document !== "undefined") {
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var category = "其他";
+  var current = null;         // {parts, plain}
+  var speakIdx = -1, speaking = false, paused = false, rate = 1.0;
+  var waitTimer = null, waitLeft = 60;
+
+  /* 类别 chips */
+  var chipsEl = $("chips");
+  CATEGORIES.forEach(function(c){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = c;
+    b.setAttribute("aria-pressed", c === category ? "true" : "false");
+    b.addEventListener("click", function(){
+      category = c;
+      chipsEl.querySelectorAll(".chip").forEach(function(x){
+        x.setAttribute("aria-pressed", x === b ? "true" : "false");
+      });
+    });
+    chipsEl.appendChild(b);
+  });
+
+  function show(id){
+    ["step-form","step-wait","step-prayer"].forEach(function(s){
+      $(s).classList.toggle("hidden", s !== id);
+    });
+    if(id) $(id).scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  /* --- 第二步：等候 60 秒 --- */
+  $("btn-start").addEventListener("click", function(){
+    var text = $("words").value.trim();
+    if(!text){
+      $("words").focus();
+      $("words").placeholder = "请先写下想说的话，再开始等候……";
+      return;
+    }
+    stopSpeaking();
+    var wv = VERSES[category][0];
+    $("wait-verse").textContent = "“" + wv.text + "”";
+    $("wait-ref").textContent = "—— " + wv.ref + "（和合本）";
+    waitLeft = 60;
+    $("count").textContent = "60";
+    $("barfill").style.width = "100%";
+    show("step-wait");
+    waitTimer = setInterval(function(){
+      waitLeft--;
+      if(waitLeft <= 0){ finishWait(); return; }
+      $("count").textContent = String(waitLeft);
+      $("barfill").style.width = (waitLeft / 60 * 100) + "%";
+    }, 1000);
+  });
+  $("btn-skip").addEventListener("click", finishWait);
+  function finishWait(){
+    if(waitTimer){ clearInterval(waitTimer); waitTimer = null; }
+    generate();
+  }
+
+  /* --- 第三步：生成并显示 --- */
+  function generate(){
+    var text = $("words").value.trim();
+    var name = $("name").value.trim();
+    current = buildPrayer(category, text, name);
+    renderPrayer(current);
+    saveHistory(category, text, current.plain);
+    show("step-prayer");
+    $("speak-status").textContent = "";
+    $("speak-controls").classList.add("hidden");
+    $("btn-speak").classList.remove("hidden");
+  }
+  function renderPrayer(p){
+    var box = $("prayer");
+    box.innerHTML = "";
+    p.parts.forEach(function(part, i){
+      var el;
+      if(part.kind === "verse"){
+        el = document.createElement("blockquote");
+        el.className = "psent";
+        el.innerHTML = "";
+        el.appendChild(document.createTextNode("“" + part.text + "”"));
+        var r = document.createElement("span");
+        r.className = "ref";
+        r.textContent = "—— " + part.ref + "（和合本）";
+        el.appendChild(r);
+      } else if(part.kind === "user"){
+        el = document.createElement("p");
+        el.className = "psent user-words";
+        el.textContent = part.text;
+      } else {
+        el = document.createElement("p");
+        el.className = "psent" + (part.amen ? " amen" : "");
+        el.textContent = part.text;
+      }
+      el.setAttribute("data-i", String(i));
+      box.appendChild(el);
+    });
+  }
+
+  /* --- 第四步：带领祷告（浏览器朗读） --- */
+  function pickVoice(){
+    if(!("speechSynthesis" in window)) return null;
+    var vs = window.speechSynthesis.getVoices();
+    for(var i=0;i<vs.length;i++){
+      if(vs[i].lang && vs[i].lang.replace("_","-").toLowerCase().indexOf("zh") === 0) return vs[i];
+    }
+    return null;
+  }
+  function highlight(i){
+    document.querySelectorAll("#prayer .psent").forEach(function(el){
+      el.classList.toggle("speaking", Number(el.getAttribute("data-i")) === i);
+    });
+    var el = document.querySelector('#prayer .psent[data-i="' + i + '"]');
+    if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+  }
+  function speakFrom(i){
+    if(!current) return;
+    if(!("speechSynthesis" in window)){
+      $("speak-status").textContent = "这个浏览器不支持朗读，请用 Chrome、Edge 或 Safari 打开。";
+      return;
+    }
+    if(i >= current.parts.length){ stopSpeaking(true); return; }
+    speakIdx = i; speaking = true; paused = false;
+    $("btn-pause").textContent = "⏸ 暂停";
+    highlight(i);
+    var u = new SpeechSynthesisUtterance(current.parts[i].speak);
+    u.lang = "zh-CN";
+    var v = pickVoice(); if(v) u.voice = v;
+    u.rate = rate;
+    u.onend = function(){
+      if(!speaking || paused) return;
+      setTimeout(function(){ if(speaking && !paused) speakFrom(i + 1); }, 700);
+    };
+    u.onerror = function(){ if(speaking && !paused) setTimeout(function(){ speakFrom(i + 1); }, 300); };
+    window.speechSynthesis.speak(u);
+    $("speak-status").textContent = "正在带领祷告…（第 " + (i + 1) + " / " + current.parts.length + " 句）";
+  }
+  function stopSpeaking(done){
+    speaking = false; paused = false; speakIdx = -1;
+    if("speechSynthesis" in window) window.speechSynthesis.cancel();
+    document.querySelectorAll("#prayer .psent").forEach(function(el){ el.classList.remove("speaking"); });
+    $("speak-controls").classList.add("hidden");
+    $("btn-speak").classList.remove("hidden");
+    $("speak-status").textContent = done ? "阿们。愿主垂听你的祷告。" : "";
+  }
+  $("btn-speak").addEventListener("click", function(){
+    if(!current) return;
+    $("btn-speak").classList.add("hidden");
+    $("speak-controls").classList.remove("hidden");
+    speakFrom(0);
+  });
+  $("btn-pause").addEventListener("click", function(){
+    if(!speaking) return;
+    if(paused){
+      paused = false;
+      window.speechSynthesis.resume();
+      $("btn-pause").textContent = "⏸ 暂停";
+      $("speak-status").textContent = "继续带领祷告…";
+    } else {
+      paused = true;
+      window.speechSynthesis.pause();
+      $("btn-pause").textContent = "▶ 继续";
+      $("speak-status").textContent = "已暂停，慢慢来，不着急。";
+    }
+  });
+  $("btn-stop").addEventListener("click", function(){ stopSpeaking(false); });
+  $("speed-slow").addEventListener("click", function(){
+    rate = 0.75;
+    $("speed-slow").setAttribute("aria-pressed","true");
+    $("speed-normal").setAttribute("aria-pressed","false");
+  });
+  $("speed-normal").addEventListener("click", function(){
+    rate = 1.0;
+    $("speed-normal").setAttribute("aria-pressed","true");
+    $("speed-slow").setAttribute("aria-pressed","false");
+  });
+  if("speechSynthesis" in window && window.speechSynthesis.getVoices) {
+    window.speechSynthesis.getVoices();
+  }
+
+  /* 复制 / 再写一个 */
+  $("btn-copy").addEventListener("click", function(){
+    if(!current) return;
+    var done = function(){ $("btn-copy").textContent = "✅ 已复制"; setTimeout(function(){ $("btn-copy").textContent = "📋 复制祷告词"; }, 2000); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(current.plain).then(done, function(){ fallbackCopy(); });
+    } else { fallbackCopy(); }
+    function fallbackCopy(){
+      var ta = document.createElement("textarea");
+      ta.value = current.plain; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch(e){}
+      document.body.removeChild(ta);
+    }
+  });
+  $("btn-again").addEventListener("click", function(){
+    stopSpeaking();
+    show("step-form");
+  });
+
+  /* --- 我的祷告记录（仅 localStorage） --- */
+  var KEY = "prayerRoomHistoryV1";
+  function loadHist(){
+    try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch(e){ return []; }
+  }
+  function storeHist(h){ try { localStorage.setItem(KEY, JSON.stringify(h)); } catch(e){} }
+  function saveHistory(cat, input, plain){
+    var h = loadHist();
+    h.unshift({id:Date.now(), date:new Date().toLocaleString("zh-CN"), cat:cat,
+               prev:(input.length > 30 ? input.slice(0,30) + "…" : input), plain:plain});
+    if(h.length > 20) h = h.slice(0, 20);
+    storeHist(h); renderHistory();
+  }
+  function renderHistory(){
+    var list = $("history-list");
+    var h = loadHist();
+    list.innerHTML = "";
+    if(!h.length){
+      var p = document.createElement("p");
+      p.className = "hist-empty"; p.textContent = "还没有记录。写下第一篇祷告，它会出现在这里。";
+      list.appendChild(p); return;
+    }
+    h.forEach(function(item){
+      var d = document.createElement("div");
+      d.className = "hist-item";
+      var del = document.createElement("button");
+      del.className = "del"; del.textContent = "删除"; del.title = "删除这条记录";
+      del.addEventListener("click", function(ev){
+        ev.stopPropagation();
+        storeHist(loadHist().filter(function(x){ return x.id !== item.id; }));
+        renderHistory();
+      });
+      d.appendChild(del);
+      var m = document.createElement("div");
+      m.className = "meta"; m.textContent = item.date + " · " + item.cat;
+      d.appendChild(m);
+      var pv = document.createElement("div");
+      pv.className = "prev"; pv.textContent = item.prev;
+      d.appendChild(pv);
+      d.addEventListener("click", function(){
+        var rebuilt = {parts:[], plain:item.plain};
+        item.plain.split("\n").forEach(function(line){
+          if(!line.trim()) return;
+          var vm = line.match(/^(.*)（([^（）]+)）$/);
+          if(vm && VERSES[item.cat] && VERSES[item.cat].some(function(v){ return v.ref === vm[2]; })){
+            rebuilt.parts.push({kind:"verse", text:vm[1], ref:vm[2], speak:vm[1]});
+          } else {
+            rebuilt.parts.push({kind:"line", text:line, speak:line});
+          }
+        });
+        current = rebuilt;
+        renderPrayer(current);
+        stopSpeaking();
+        show("step-prayer");
+        $("speak-controls").classList.add("hidden");
+        $("btn-speak").classList.remove("hidden");
+        $("speak-status").textContent = "";
+      });
+      list.appendChild(d);
+    });
+  }
+  $("btn-clear-history").addEventListener("click", function(){
+    if(!loadHist().length) return;
+    if(confirm("确定要清空全部祷告记录吗？")){
+      storeHist([]); renderHistory();
+    }
+  });
+  renderHistory();
+})();
+}
+</script>
+</body>
+</html>
